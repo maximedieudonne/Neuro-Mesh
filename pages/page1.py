@@ -5,18 +5,14 @@ import numpy as np
 
 # Chemins par défaut
 DEFAULT_MESH_PATH = './data/mesh.gii'
-DEFAULT_TEXTURE_PATH = './data/texture.gii'
 
 # Charger les données par défaut
 mesh = fct.load_mesh(DEFAULT_MESH_PATH)
 vertices = mesh.vertices
 faces = mesh.faces
-scalars = fct.read_gii_file(DEFAULT_TEXTURE_PATH) if DEFAULT_TEXTURE_PATH else None
 
 # Définir les plages par défaut
-default_min, default_max = (
-    (np.min(scalars), np.max(scalars)) if scalars is not None else (0, 1)
-)
+default_min, default_max = 0, 1
 default_marks = {i: f"{i:.2f}" for i in np.linspace(default_min, default_max, 5)}
 
 # Layout pour la page 1
