@@ -13,7 +13,7 @@ faces = mesh.faces
 scalars = fct.read_gii_file(texture_path)
 
 # Définir l'intervalle min et max par défaut des scalaires si disponibles
-color_min_default, color_max_default = (np.min(scalars), np.max(scalars)) if scalars is not None else (0, 1)
+color_min_default, color_max_default = (np.min(scalars), np.max(scalars)) if scalars is not None else (0, 100)
 
 # Layout pour la page 1
 layout = html.Div(
@@ -58,7 +58,7 @@ layout = html.Div(
                 # Panneau gauche : Options
                 html.Div(
                     style={
-                        "flex": "1",  # Équilibrer la largeur avec flex
+                        "flex": "1",
                         "backgroundColor": "#f9f9f9",
                         "padding": "20px",
                         "borderRadius": "8px",
@@ -77,7 +77,8 @@ layout = html.Div(
                             options=[
                                 {'label': 'Sequential', 'value': 'sequential'},
                                 {'label': 'Diverging', 'value': 'diverging'},
-                                {'label': 'Cyclical', 'value': 'cyclical'}
+                                {'label': 'Cyclical', 'value': 'cyclical'},
+                                {'label': 'Custom Saved Colormaps', 'value': 'custom'},  # Ajouté pour les colormaps personnalisées
                             ],
                             value='sequential',
                             clearable=False,
@@ -133,7 +134,7 @@ layout = html.Div(
                 # Zone centrale : Visualisation
                 html.Div(
                     style={
-                        "flex": "2",  # Prend plus d'espace
+                        "flex": "2",
                         "backgroundColor": "#ffffff",
                         "padding": "20px",
                         "borderRadius": "8px",
@@ -150,7 +151,7 @@ layout = html.Div(
                 # Panneau droit : Slider
                 html.Div(
                     style={
-                        "flex": "1",  # Équilibrer la largeur avec flex
+                        "flex": "1",
                         "backgroundColor": "#f9f9f9",
                         "padding": "20px",
                         "borderRadius": "8px",

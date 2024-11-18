@@ -1,6 +1,5 @@
 from dash import html, dcc
 
-# Layout pour la page 2
 layout = html.Div(
     style={
         "display": "flex",
@@ -8,11 +7,10 @@ layout = html.Div(
         "alignItems": "center",
         "backgroundColor": "#ffffff",
         "padding": "20px",
-        "height": "calc(100vh - 60px)",  # Ajuste pour prendre tout l'espace sous la barre de navigation
+        "height": "calc(100vh - 60px)",
         "boxSizing": "border-box",
     },
     children=[
-        # Header
         html.Div(
             style={
                 "textAlign": "center",
@@ -31,8 +29,6 @@ layout = html.Div(
                 html.P("Advanced visualization and customization tool for colormaps"),
             ],
         ),
-
-        # Main content
         html.Div(
             style={
                 "display": "flex",
@@ -41,7 +37,6 @@ layout = html.Div(
                 "gap": "20px",
             },
             children=[
-                # Left panel: Options
                 html.Div(
                     style={
                         "flex": "1",
@@ -147,8 +142,6 @@ layout = html.Div(
                         html.Div(id="save-status", style={"marginTop": "10px", "color": "green"}),
                     ],
                 ),
-
-                # Right panel: Visualization
                 html.Div(
                     style={
                         "flex": "2",

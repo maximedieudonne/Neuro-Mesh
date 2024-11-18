@@ -3,7 +3,8 @@ import plotly.colors as pc
 import nibabel as nib
 import trimesh
 import plotly.graph_objects as go
-
+import json
+import os
 
 def load_mesh(gifti_file):
     """
@@ -75,7 +76,37 @@ def create_slider_marks(color_min_default, color_max_default):
     return {str(i): f'{i:.2f}' for i in np.linspace(color_min_default, color_max_default, 10)}
 
 
-def plot_mesh_with_colorbar(vertices, faces, scalars=None, color_min=None, color_max=None, camera=None, show_contours=False, colormap='jet', use_black_intervals=False, center_colormap_on_zero=False):
+
+
+
+def convert_custom_colormap_to_plotly(colors):
+    """
+    Convert a custom colormap to a Plotly-compatible colorscale
+    without introducing gradients or interpolations.
+    
+    :param colors: List of dicts with 'color', 'min', 'max' keys.
+    :return: List of [normalized_position, color] for Plotly, preserving the exact color ranges.
+    """
+    if not colors:
+        return []
+
+    total_range = colors[-1]["max"] - colors[0]["min"]
+    colorscale = []
+
+    for entry in colors:
+        # Normalized positions for Plotly
+        normalized_min = (entry["min"] - colors[0]["min"]) / total_range
+        normalized_max = (entry["max"] - colors[0]["min"]) / total_range
+        
+        # Append both the start and end of the interval with the same color
+        colorscale.append([normalized_min, entry["color"]])
+        colorscale.append([normalized_max, entry["color"]])
+
+    return colorscale
+
+def plot_mesh_with_colorbar(vertices, faces, scalars=None, color_min=None, color_max=None, camera=None,
+                            show_contours=False, colormap='jet', use_black_intervals=False,
+                            center_colormap_on_zero=False):
     fig_data = dict(
         x=vertices[:, 0], y=vertices[:, 1], z=vertices[:, 2],
         i=faces[:, 0], j=faces[:, 1], k=faces[:, 2],
@@ -90,7 +121,10 @@ def plot_mesh_with_colorbar(vertices, faces, scalars=None, color_min=None, color
             max_abs_value = max(abs(color_min), abs(color_max))
             color_min, color_max = -max_abs_value, max_abs_value
 
-        if use_black_intervals:
+        # Convert custom colormap or use default
+        if isinstance(colormap, list):  # Si colormap est une liste personnalisée
+            colorscale = convert_custom_colormap_to_plotly(colormap)
+        elif use_black_intervals:
             colorscale = create_colormap_with_black_stripes(colormap)
         else:
             colorscale = colormap
@@ -126,3 +160,46 @@ def plot_mesh_with_colorbar(vertices, faces, scalars=None, color_min=None, color
     margin=dict(l=10, r=10, b=10, t=10))
 
     return fig
+
+
+CUSTOM_COLORMAP_DIR = "custom_colormap"
+
+def save_custom_colormap(name, data):
+    """
+    Sauvegarder une colormap personnalisée dans un fichier JSON.
+    
+    :param name: Nom de la colormap.
+    :param data: Données de la colormap (list of dicts).
+    """
+    filepath = os.path.join(CUSTOM_COLORMAP_DIR, f"{name}.json")
+    with open(filepath, "w") as file:
+        json.dump(data, file, indent=4)
+
+
+def save_custom_colormap(name, data):
+    """
+    Sauvegarder une colormap personnalisée dans un fichier JSON.
+    
+    :param name: Nom de la colormap.
+    :param data: Données de la colormap (list of dicts).
+    """
+    filepath = os.path.join(CUSTOM_COLORMAP_DIR, f"{name}.json")
+    with open(filepath, "w") as file:
+        json.dump(data, file, indent=4)
+
+
+def load_all_custom_colormaps():
+    """
+    Charger toutes les colormaps personnalisées depuis le dossier.
+    
+    :return: Dictionnaire {nom_colormap: données_colormap}.
+    """
+    custom_colormaps = {}
+    for filename in os.listdir(CUSTOM_COLORMAP_DIR):
+        if filename.endswith(".json"):
+            filepath = os.path.join(CUSTOM_COLORMAP_DIR, filename)
+            with open(filepath, "r") as file:
+                name = os.path.splitext(filename)[0]
+                custom_colormaps[name] = json.load(file)
+    return custom_colormaps
+
