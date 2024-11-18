@@ -1,5 +1,4 @@
 from dash import html, dcc
-import plotly.colors as pc
 import numpy as np
 import fonctions as fct
 
@@ -21,11 +20,11 @@ layout = html.Div(
     style={
         "display": "flex",
         "flexDirection": "column",
-        "justifyContent": "flex-start",
         "alignItems": "center",
-        "height": "100%",
         "backgroundColor": "#ffffff",
         "padding": "20px",
+        "height": "calc(100vh - 60px)",  # Ajuste pour prendre tout l'espace sous la barre de navigation
+        "boxSizing": "border-box",
     },
     children=[
         # Titre de la page
@@ -51,16 +50,15 @@ layout = html.Div(
         html.Div(
             style={
                 "display": "flex",
-                "justifyContent": "space-between",
-                "gap": "20px",
+                "flexGrow": 1,
                 "width": "100%",
-                "height": "100%",
+                "gap": "20px",
             },
             children=[
                 # Panneau gauche : Options
                 html.Div(
                     style={
-                        "width": "25%",  # Largeur augmentée pour plus d'espace
+                        "flex": "1",  # Équilibrer la largeur avec flex
                         "backgroundColor": "#f9f9f9",
                         "padding": "20px",
                         "borderRadius": "8px",
@@ -135,7 +133,7 @@ layout = html.Div(
                 # Zone centrale : Visualisation
                 html.Div(
                     style={
-                        "width": "50%",  # Largeur centrale
+                        "flex": "2",  # Prend plus d'espace
                         "backgroundColor": "#ffffff",
                         "padding": "20px",
                         "borderRadius": "8px",
@@ -152,7 +150,7 @@ layout = html.Div(
                 # Panneau droit : Slider
                 html.Div(
                     style={
-                        "width": "25%",
+                        "flex": "1",  # Équilibrer la largeur avec flex
                         "backgroundColor": "#f9f9f9",
                         "padding": "20px",
                         "borderRadius": "8px",
@@ -169,7 +167,7 @@ layout = html.Div(
                         ),
                         html.Div(
                             style={
-                                "width": "100%",  # Conteneur pour encapsuler le RangeSlider
+                                "width": "100%",
                                 "display": "flex",
                                 "justifyContent": "center",
                                 "alignItems": "center",

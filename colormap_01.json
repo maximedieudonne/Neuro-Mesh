@@ -1,26 +1,26 @@
 {
     "data": [
         {
-            "color": "blue",
-            "min": 50,
-            "max": 70
+            "color": "lightgreen",
+            "min": -10,
+            "max": 10
         },
         {
             "color": "red",
-            "min": 70,
-            "max": 110
+            "min": 10,
+            "max": 15
         },
         {
-            "color": "red",
-            "min": 110,
-            "max": 115
+            "color": "orange",
+            "min": 15,
+            "max": 60
         },
         {
             "color": "lightgreen",
-            "min": 115,
-            "max": 150
+            "min": 60,
+            "max": 100
         }
     ],
-    "mincolormap": 50,
-    "maxcolormap": 150
+    "mincolormap": -10,
+    "maxcolormap": 100
 }
