@@ -1,22 +1,23 @@
 from dash import html, dcc
 import dash_uploader as du
-import numpy as np
 import fonctions as fct
+import numpy as np
 
 # Chemins par défaut
 DEFAULT_MESH_PATH = './data/mesh.gii'
 DEFAULT_TEXTURE_PATH = './data/texture.gii'
 
-# Charger le maillage et la texture par défaut
+# Charger les données par défaut
 mesh = fct.load_mesh(DEFAULT_MESH_PATH)
 vertices = mesh.vertices
 faces = mesh.faces
 scalars = fct.read_gii_file(DEFAULT_TEXTURE_PATH) if DEFAULT_TEXTURE_PATH else None
 
-# Définir l'intervalle min et max des scalaires
-color_min_default, color_max_default = (
-    (np.min(scalars), np.max(scalars)) if scalars is not None else (0, 100)
+# Définir les plages par défaut
+default_min, default_max = (
+    (np.min(scalars), np.max(scalars)) if scalars is not None else (0, 1)
 )
+default_marks = {i: f"{i:.2f}" for i in np.linspace(default_min, default_max, 5)}
 
 # Layout pour la page 1
 layout = html.Div(
@@ -26,11 +27,11 @@ layout = html.Div(
         "alignItems": "center",
         "backgroundColor": "#ffffff",
         "padding": "20px",
-        "height": "calc(100vh - 60px)",  # Ajuste pour prendre tout l'espace sous la barre de navigation
+        "height": "calc(100vh - 60px)",
         "boxSizing": "border-box",
     },
     children=[
-        # Titre de la page
+        # Titre
         html.Div(
             style={
                 "textAlign": "center",
@@ -136,15 +137,16 @@ layout = html.Div(
                         html.Label("Ajuster la plage de valeurs", style={"fontWeight": "bold", "fontSize": "16px"}),
                         dcc.RangeSlider(
                             id='range-slider',
-                            min=color_min_default,
-                            max=color_max_default,
+                            min=default_min,
+                            max=default_max,
                             step=0.01,
-                            value=[color_min_default, color_max_default],
-                            marks=fct.create_slider_marks(color_min_default, color_max_default),
+                            value=[default_min, default_max],
+                            marks=default_marks,
                             vertical=True,
                             verticalHeight=500,
                             tooltip={"placement": "right", "always_visible": True},
                         ),
+                        html.Div(id='upload-status', style={"color": "green", "marginTop": "10px"}),
                     ],
                 ),
             ],
