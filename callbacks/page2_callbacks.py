@@ -1,4 +1,3 @@
-from dash.dependencies import Input, Output
 import json
 from dash import Input, Output, State, ctx, html, no_update
 import plotly.graph_objects as go
@@ -132,7 +131,7 @@ def register_callbacks(app):
         [
             Output("colormap-visual", "figure"),
             Output("color-info", "children"),
-            Output("colormap-dropdown", "options"),
+            Output("colormap-dropdown2", "options"),
             Output("save-status", "children"),
             Output("background-color-dropdown", "options"),
         ],
@@ -140,7 +139,7 @@ def register_callbacks(app):
             Input("add-color-btn", "n_clicks"),
             Input("save-colormap-btn", "n_clicks"),
             Input("reset-colormap-btn", "n_clicks"),
-            Input("colormap-dropdown", "value"),
+            Input("colormap-dropdown2", "value"),
             Input("background-color-dropdown", "value"),
             Input("apply-bounds-btn", "n_clicks"),
         ],
@@ -198,7 +197,7 @@ def register_callbacks(app):
             save_status = "Colormap reset to default"
 
         # Load a selected colormap
-        if ctx.triggered_id == "colormap-dropdown" and selected_colormap:
+        if ctx.triggered_id == "colormap-dropdown2" and selected_colormap:
             selected_data = saved_colormaps[selected_colormap]
             colormap_data = selected_data["data"]
             mincolormap = selected_data["mincolormap"]
