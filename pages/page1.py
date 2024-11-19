@@ -5,6 +5,7 @@ import numpy as np
 
 # Chemins par défaut
 DEFAULT_MESH_PATH = './data/mesh.gii'
+colorscale_names = fct.get_colorscale_names('./custom_colormap')
 
 # Charger les données par défaut
 mesh = fct.load_mesh(DEFAULT_MESH_PATH)
@@ -73,25 +74,9 @@ layout = html.Div(
                         html.Label("Importer une texture :", style={"fontWeight": "bold", "fontSize": "16px"}),
                         du.Upload(id='upload-texture', text="Importer une texture", default_style={"padding": "10px"}),
 
-                        html.Label("Sélectionner le type de colormap", style={"fontWeight": "bold", "fontSize": "16px"}),
-                        dcc.Dropdown(
-                            id='colormap-type-dropdown',
-                            options=[
-                                {'label': 'Sequential', 'value': 'sequential'},
-                                {'label': 'Diverging', 'value': 'diverging'},
-                                {'label': 'Cyclical', 'value': 'cyclical'},
-                                {'label': 'Custom Saved Colormaps', 'value': 'custom'},
-                            ],
-                            value='sequential',
-                            clearable=False,
-                        ),
                         html.Label("Sélectionner une colormap", style={"fontWeight": "bold", "fontSize": "16px"}),
-                        dcc.Dropdown(
-                            id='colormap-dropdown',
-                            options=[{'label': cmap, 'value': cmap} for cmap in fct.get_colorscale_names('sequential')],
-                            value='Viridis',
-                            clearable=False,
-                        ),
+                        dcc.Dropdown( id='colormap-dropdown', options=[{'label': cmap, 'value': cmap} for cmap in colorscale_names],
+                                     value='Viridis',clearable=False),    
                         html.Label("Afficher les isolignes", style={"fontWeight": "bold", "fontSize": "16px"}),
                         dcc.Checklist(id='toggle-contours', options=[{'label': 'Oui', 'value': 'on'}], value=[]),
                         html.Label("Activer traits noirs", style={"fontWeight": "bold", "fontSize": "16px"}),

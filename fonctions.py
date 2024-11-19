@@ -6,31 +6,18 @@ import plotly.graph_objects as go
 import json
 import os
 
-def load_mesh(gifti_file):
-    """
-    load gifti_file and create a trimesh object
-    :param gifti_file: str, path to the gifti file on the disk
-    :return: the corresponding trimesh object
-    """
-    g = nib.load(gifti_file)
-    coords, faces = g.get_arrays_from_intent(
-        nib.nifti1.intent_codes['NIFTI_INTENT_POINTSET'])[0].data, \
-        g.get_arrays_from_intent(
-            nib.nifti1.intent_codes['NIFTI_INTENT_TRIANGLE'])[0].data
-    metadata = g.meta.metadata
-    metadata['filename'] = gifti_file
-    return trimesh.Trimesh(faces=faces, vertices=coords,
-                           metadata=metadata, process=False)
 
-# Fonction pour lire un fichier GIFTI (scalars.gii)
-def read_gii_file(file_path):
-    try:
-        gifti_img = nib.load(file_path)
-        scalars = gifti_img.darrays[0].data
-        return scalars
-    except Exception as e:
-        print(f"Erreur lors du chargement de la texture : {e}")
-        return None
+def get_colorscale_names(local_directory='./custom_colormap'):
+    sequential_names = [name for name in pc.sequential.__dict__.keys() if '__' not in name and 'swatches' not in name and '_r' not in name]
+    diverging_names = [name for name in pc.diverging.__dict__.keys() if '__' not in name and 'swatches' not in name and '_r' not in name]
+    cyclical_names = [name for name in pc.cyclical.__dict__.keys() if '__' not in name and 'swatches' not in name and '_r' not in name]
+    
+    local_colormaps = load_local_colormaps(local_directory)
+    local_names = list(local_colormaps.keys())
+    print(f"Local colormaps détectées : {local_names}")  # Débogage
+    predefined_colormaps = np.hstack([sequential_names[0:3], diverging_names[0:3], cyclical_names[0:3], local_names])    
+    return predefined_colormaps
+
 
 # Fonction pour convertir des couleurs RGB en hexadécimal
 def convert_rgb_to_hex_if_needed(colormap):
@@ -43,6 +30,7 @@ def convert_rgb_to_hex_if_needed(colormap):
         else:
             hex_colormap.append(color)
     return hex_colormap
+
 
 # Création d'une colormap avec des traits noirs
 def create_colormap_with_black_stripes(base_colormap, num_intervals=10, black_line_width=0.01):
@@ -62,30 +50,30 @@ def create_colormap_with_black_stripes(base_colormap, num_intervals=10, black_li
     custom_colormap.append([1, old_colormap[-1]])
     return custom_colormap
 
-def get_colorscale_names(colormap_type):
-    if colormap_type == 'sequential':
-        return [name for name in pc.sequential.__dict__.keys() if '__' not in name and 'swatches' not in name]
-    elif colormap_type == 'diverging':
-        return [name for name in pc.diverging.__dict__.keys() if '__' not in name and 'swatches' not in name]
-    elif colormap_type == 'cyclical':
-        return [name for name in pc.cyclical.__dict__.keys() if '__' not in name and 'swatches' not in name]
-    return []
+# Charger les colormaps locales depuis un répertoire
+def load_local_colormaps(directory):
+    local_colormaps = {}
+    for filename in os.listdir(directory):
+        if filename.endswith(".json"):
+            filepath = os.path.join(directory, filename)
+            with open(filepath, "r") as file:
+                try:
+                    data = json.load(file)
+                    name = os.path.splitext(filename)[0]
+                    local_colormaps[name] = data
+                    print(f"Chargé : {name} depuis {filepath}")  # Debug
+                except json.JSONDecodeError as e:
+                    print(f"Erreur JSON dans {filepath} : {e}")
+    return local_colormaps
 
-# Créer des ticks clairs pour le slider
-def create_slider_marks(color_min_default, color_max_default):
-    return {str(i): f'{i:.2f}' for i in np.linspace(color_min_default, color_max_default, 10)}
 
-
-
-
-
+# Conversion d'une colormap locale en format Plotly
 def convert_custom_colormap_to_plotly(colors):
     """
-    Convert a custom colormap to a Plotly-compatible colorscale
-    without introducing gradients or interpolations.
+    Convertir une colormap personnalisée en colorscale compatible Plotly.
     
-    :param colors: List of dicts with 'color', 'min', 'max' keys.
-    :return: List of [normalized_position, color] for Plotly, preserving the exact color ranges.
+    :param colors: Liste de dicts contenant 'min', 'max', et 'color'.
+    :return: Liste de [position_normalisée, couleur] pour Plotly.
     """
     if not colors:
         return []
@@ -94,19 +82,47 @@ def convert_custom_colormap_to_plotly(colors):
     colorscale = []
 
     for entry in colors:
-        # Normalized positions for Plotly
+        # Positions normalisées pour Plotly
         normalized_min = (entry["min"] - colors[0]["min"]) / total_range
         normalized_max = (entry["max"] - colors[0]["min"]) / total_range
-        
-        # Append both the start and end of the interval with the same color
+
+        # Ajouter les couleurs aux positions normalisées
         colorscale.append([normalized_min, entry["color"]])
         colorscale.append([normalized_max, entry["color"]])
 
     return colorscale
 
+
+# Fonction pour charger un maillage GIFTI
+def load_mesh(gifti_file):
+    g = nib.load(gifti_file)
+    coords, faces = g.get_arrays_from_intent(
+        nib.nifti1.intent_codes['NIFTI_INTENT_POINTSET'])[0].data, \
+        g.get_arrays_from_intent(
+            nib.nifti1.intent_codes['NIFTI_INTENT_TRIANGLE'])[0].data
+    metadata = g.meta.metadata
+    metadata['filename'] = gifti_file
+    return trimesh.Trimesh(faces=faces, vertices=coords, metadata=metadata, process=False)
+
+
+# Fonction pour lire un fichier GIFTI (scalars.gii)
+def read_gii_file(file_path):
+    try:
+        gifti_img = nib.load(file_path)
+        scalars = gifti_img.darrays[0].data
+        return scalars
+    except Exception as e:
+        print(f"Erreur lors du chargement de la texture : {e}")
+        return None
+
+
+# Visualisation du maillage 3D avec colorbar
 def plot_mesh_with_colorbar(vertices, faces, scalars=None, color_min=None, color_max=None, camera=None,
                             show_contours=False, colormap='jet', use_black_intervals=False,
-                            center_colormap_on_zero=False):
+                            center_colormap_on_zero=False, local_colormaps=None):
+    """
+    Générer un graphique 3D de maillage avec une colorbar interactive.
+    """
     fig_data = dict(
         x=vertices[:, 0], y=vertices[:, 1], z=vertices[:, 2],
         i=faces[:, 0], j=faces[:, 1], k=faces[:, 2],
@@ -121,9 +137,9 @@ def plot_mesh_with_colorbar(vertices, faces, scalars=None, color_min=None, color
             max_abs_value = max(abs(color_min), abs(color_max))
             color_min, color_max = -max_abs_value, max_abs_value
 
-        # Convert custom colormap or use default
-        if isinstance(colormap, list):  # Si colormap est une liste personnalisée
-            colorscale = convert_custom_colormap_to_plotly(colormap)
+        # Vérifier si la colormap est locale
+        if local_colormaps and colormap in local_colormaps:
+            colorscale = convert_custom_colormap_to_plotly(local_colormaps[colormap]["data"])
         elif use_black_intervals:
             colorscale = create_colormap_with_black_stripes(colormap)
         else:
@@ -162,44 +178,6 @@ def plot_mesh_with_colorbar(vertices, faces, scalars=None, color_min=None, color
     return fig
 
 
-CUSTOM_COLORMAP_DIR = "custom_colormap"
-
-def save_custom_colormap(name, data):
-    """
-    Sauvegarder une colormap personnalisée dans un fichier JSON.
-    
-    :param name: Nom de la colormap.
-    :param data: Données de la colormap (list of dicts).
-    """
-    filepath = os.path.join(CUSTOM_COLORMAP_DIR, f"{name}.json")
-    with open(filepath, "w") as file:
-        json.dump(data, file, indent=4)
-
-
-def save_custom_colormap(name, data):
-    """
-    Sauvegarder une colormap personnalisée dans un fichier JSON.
-    
-    :param name: Nom de la colormap.
-    :param data: Données de la colormap (list of dicts).
-    """
-    filepath = os.path.join(CUSTOM_COLORMAP_DIR, f"{name}.json")
-    with open(filepath, "w") as file:
-        json.dump(data, file, indent=4)
-
-
-def load_all_custom_colormaps():
-    """
-    Charger toutes les colormaps personnalisées depuis le dossier.
-    
-    :return: Dictionnaire {nom_colormap: données_colormap}.
-    """
-    custom_colormaps = {}
-    for filename in os.listdir(CUSTOM_COLORMAP_DIR):
-        if filename.endswith(".json"):
-            filepath = os.path.join(CUSTOM_COLORMAP_DIR, filename)
-            with open(filepath, "r") as file:
-                name = os.path.splitext(filename)[0]
-                custom_colormaps[name] = json.load(file)
-    return custom_colormaps
-
+# Créer des ticks clairs pour le slider
+def create_slider_marks(color_min_default, color_max_default):
+    return {str(i): f'{i:.2f}' for i in np.linspace(color_min_default, color_max_default, 10)}
