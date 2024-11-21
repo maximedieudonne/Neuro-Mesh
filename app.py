@@ -42,7 +42,7 @@ def configure_layout_and_routes(app):
                                 },
                             ),
                             html.H1(
-                                "Improved Dashboard",
+                                "Mesh Visualization for Neuroscience",
                                 style={"margin": "0", "fontSize": "20px", "fontWeight": "bold"},
                             ),
                         ],
@@ -55,8 +55,8 @@ def configure_layout_and_routes(app):
                             "gap": "30px",
                         },
                         children=[
-                            dcc.Link('Page 1', href='/', className='nav-link'),
-                            dcc.Link('Page 2', href='/page2', className='nav-link'),
+                            dcc.Link('3D Mesh Visualizer', href='/', className='nav-link'),
+                            dcc.Link('Colormap Builder', href='/page2', className='nav-link'),
                         ],
                     ),
                 ],

@@ -28,24 +28,6 @@ layout = html.Div(
         "boxSizing": "border-box",
     },
     children=[
-        # Titre
-        html.Div(
-            style={
-                "textAlign": "center",
-                "backgroundColor": "#3e4c6d",
-                "padding": "15px",
-                "color": "white",
-                "borderRadius": "8px",
-                "width": "100%",
-                "marginBottom": "20px",
-            },
-            children=[
-                html.H1(
-                    "Visualisation de maillage 3D avec colormap interactive",
-                    style={"margin": "0", "fontWeight": "bold", "fontSize": "28px"},
-                ),
-            ],
-        ),
         # Contenu principal
         html.Div(
             style={
@@ -77,6 +59,8 @@ layout = html.Div(
                         html.Label("Sélectionner une colormap", style={"fontWeight": "bold", "fontSize": "16px"}),
                         dcc.Dropdown( id='colormap-dropdown', options=[{'label': cmap, 'value': cmap} for cmap in colorscale_names],
                                      value='Viridis',clearable=False),    
+                        html.Label("Appliquer valeur max sommet aux faces", style={"fontWeight": "bold", "fontSize": "16px"}),
+                        dcc.Checklist(id='toggle-triangle', options=[{'label': 'Oui', 'value': 'on'}], value=[]),
                         html.Label("Afficher les isolignes", style={"fontWeight": "bold", "fontSize": "16px"}),
                         dcc.Checklist(id='toggle-contours', options=[{'label': 'Oui', 'value': 'on'}], value=[]),
                         html.Label("Activer traits noirs", style={"fontWeight": "bold", "fontSize": "16px"}),

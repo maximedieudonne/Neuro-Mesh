@@ -13,24 +13,6 @@ layout = html.Div(
     children=[
         html.Div(
             style={
-                "textAlign": "center",
-                "backgroundColor": "#3e4c6d",
-                "padding": "15px",
-                "color": "white",
-                "borderRadius": "8px",
-                "marginBottom": "20px",
-                "width": "100%",
-            },
-            children=[
-                html.H1(
-                    "Interactive Colormap Builder",
-                    style={"margin": "0", "fontWeight": "bold", "fontSize": "28px"},
-                ),
-                html.P("Advanced visualization and customization tool for colormaps"),
-            ],
-        ),
-        html.Div(
-            style={
                 "display": "flex",
                 "flexGrow": 1,
                 "width": "100%",

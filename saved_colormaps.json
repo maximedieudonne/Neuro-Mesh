@@ -144,5 +144,31 @@
         ],
         "mincolormap": 0,
         "maxcolormap": 100
+    },
+    "colormap_07": {
+        "data": [
+            {
+                "color": "lightgreen",
+                "min": 10,
+                "max": 50
+            },
+            {
+                "color": "blue",
+                "min": 50,
+                "max": 85
+            },
+            {
+                "color": "green",
+                "min": 85,
+                "max": 89
+            },
+            {
+                "color": "lightgreen",
+                "min": 89,
+                "max": 100
+            }
+        ],
+        "mincolormap": 10,
+        "maxcolormap": 100
     }
 }

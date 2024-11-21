@@ -36,6 +36,7 @@ def register_callbacks(app):
             Input('upload-mesh', 'isCompleted'),
             Input('upload-texture', 'isCompleted'),
             Input('range-slider', 'value'),
+            Input('toggle-triangle', 'value'),
             Input('toggle-contours', 'value'),
             Input('toggle-black-intervals', 'value'),
             Input('colormap-dropdown', 'value'),
@@ -47,7 +48,7 @@ def register_callbacks(app):
         ],
     )
     def update_figure(
-        mesh_uploaded, texture_uploaded, value_range, toggle_contours,
+        mesh_uploaded, texture_uploaded, value_range, toggle_triangle, toggle_contours,
         toggle_black_intervals, selected_colormap, center_colormap,
         mesh_files, texture_files
     ):
@@ -122,6 +123,7 @@ def register_callbacks(app):
             show_contours='on' in toggle_contours,
             center_colormap_on_zero='on' in center_colormap,
             use_black_intervals='on' in toggle_black_intervals,
+            apply_to_faces='on' in toggle_triangle
         )
         return (
             fig,
